@@ -16,7 +16,7 @@ export default function MenuItem({title, shortcut, onRemoveClick, onSelect, id}:
 
     const shortcutHandler = (e: KeyboardEvent) => {
         if (e.key === shortcut.toString()) {
-            console.log(title);
+            onSelect(id);
         }
     };
 
