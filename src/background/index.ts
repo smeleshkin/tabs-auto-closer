@@ -23,7 +23,7 @@ chrome.runtime.onMessage.addListener(
                         try {
                             await chrome.tabs.remove(tabId)
                         } catch (e) {
-                            console.warn(`Error in remove tab with id "${tabId}": ${e.toString()}`);
+                            console.warn(`Error in remove tab with id "${tabId}": ${String(e)}`);
                         }
                     }
                 }, matchedGroup.closeTimeout);
