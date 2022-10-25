@@ -1,13 +1,21 @@
-import React, {FormEventHandler, MutableRefObject} from 'react';
+import React from 'react';
 
 interface Props {
     value: string,
-    onChange: FormEventHandler<HTMLInputElement>,
-    inputRef?: MutableRefObject<HTMLInputElement | undefined>,
+    onChange: React.ChangeEventHandler<HTMLInputElement>,
+    inputRef?: React.MutableRefObject<HTMLInputElement>,
     placeholder?: string
 }
 
 export default function TextInput({value, onChange, inputRef, placeholder}: Props) {
-    // @ts-ignore
-    return <input type="text" ref={inputRef} onChange={onChange} value={value} placeholder={placeholder} />;
+    return (
+        <input
+            type="text"
+            ref={inputRef}
+            onChange={onChange}
+            value={value}
+            placeholder={placeholder}
+            className="w-100"
+        />
+    );
 }

@@ -17,10 +17,14 @@ chrome.runtime.onMessage.addListener(
 
             const matchedGroup = findMatchedGroup(groups, message.url);
             if (matchedGroup) {
-                setTimeout(() =>  {
+                setTimeout(async () =>  {
                     const tabId = sender.tab?.id;
                     if (tabId) {
-                        chrome.tabs.remove(tabId)
+                        try {
+                            await chrome.tabs.remove(tabId)
+                        } catch (e) {
+                            console.warn(`Error in remove tab with id "${tabId}": ${e.toString()}`);
+                        }
                     }
                 }, matchedGroup.closeTimeout);
             }

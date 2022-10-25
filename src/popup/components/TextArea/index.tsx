@@ -1,12 +1,13 @@
-import React, {FormEventHandler} from 'react';
+import React from 'react';
 
 interface Props {
     value: string,
-    onChange: FormEventHandler<HTMLTextAreaElement>,
+    onChange: React.ChangeEventHandler<HTMLTextAreaElement>,
+    placeholder?: string,
 }
 
-export default function TextArea({value, onChange}: Props) {
+export default function TextArea({value, onChange, placeholder}: Props) {
     return (
-        <textarea onChange={onChange} value={value} />
+        <textarea onChange={onChange} value={value} placeholder={placeholder} className="w-100" />
     )
 }
