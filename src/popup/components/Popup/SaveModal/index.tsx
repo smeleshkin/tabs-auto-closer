@@ -69,7 +69,7 @@ export default function SaveModal({onClose, selectedGroup}: Props) {
                 <TextInput
                     value={newItemTimeout}
                     onChange={onInputTimeoutHandler}
-                    placeholder="Close timeout"
+                    placeholder="Close timeout in ms"
                 />
             </div>
             <TextArea value={newItemText} onChange={onInputTextHandler} placeholder={TEXTAREA_PLACEHOLDER} />
