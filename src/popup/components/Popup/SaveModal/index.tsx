@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from 'react';
 
 import TextInput from 'src@/popup/components/TextInput';
 import TextArea from 'src@/popup/components/TextArea';
-import Button from 'src@/popup/components/Button';
+import Button, {ButtonTypes} from 'src@/popup/components/Button';
 import { saveUrlGroup } from 'src@/utils/localStorage';
 import { generateRandomString } from 'src@/utils/randomizer';
 import {UrlGroup} from 'src@/types/urlGroup';
@@ -53,8 +53,6 @@ export default function SaveModal({onClose, selectedGroup}: Props) {
         }
     }, []);
 
-
-
     return (
         <div>
             <div className="mb-1">
@@ -73,8 +71,8 @@ export default function SaveModal({onClose, selectedGroup}: Props) {
                 />
             </div>
             <TextArea value={newItemText} onChange={onInputTextHandler} placeholder={TEXTAREA_PLACEHOLDER} />
-            <div>
-                <Button text="Save" className="saveModalButtonRightMargin" callback={onSave} />
+            <div className="saveModalActionsBlock">
+                <Button text="Save" callback={onSave} type={ButtonTypes.PRIMARY} />
                 <Button text="Close" callback={onClose} />
             </div>
         </div>

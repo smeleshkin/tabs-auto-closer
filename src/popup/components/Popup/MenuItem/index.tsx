@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 
-import Button from 'src@/popup/components/Button';
+import Button, {ButtonTypes} from 'src@/popup/components/Button';
 
 import './index.scss';
 
@@ -31,8 +31,8 @@ export default function MenuItem({title, shortcut, onRemoveClick, onSelect, id}:
         <div className="menuItem">
             <div>[{shortcut}] {title}</div>
             <div>
-                <Button text="[E]" title="Edit" className="menuItemButton" callback={() => onSelect(id)} />
-                <Button text="[X]" title="Remove" callback={() => onRemoveClick(id)} />
+                <Button text="[E]" title="Edit" className="menuItemButton" callback={() => onSelect(id)} type={ButtonTypes.PRIMARY} />
+                <Button text="[X]" title="Remove" callback={() => onRemoveClick(id)} type={ButtonTypes.DANGER} />
             </div>
         </div>
     );
