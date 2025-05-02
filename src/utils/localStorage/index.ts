@@ -16,7 +16,21 @@ export function getData(): Promise<LSData> {
     return getLSData(LS_KEY, LS_EMPTY_DATA);
 }
 
-function saveData(data: LSData): Promise<void> {
+export async function saveDataWithOptions(data: LSData, withReplace: boolean) {
+    if (withReplace) {
+        return saveData(data);
+    }
+
+    const currentData = await getData();
+    return saveData({
+        groups: [
+            ...currentData.groups,
+            ...data.groups,
+        ],
+    });
+}
+
+export function saveData(data: LSData): Promise<void> {
     return saveLSData(LS_KEY, data);
 }
 

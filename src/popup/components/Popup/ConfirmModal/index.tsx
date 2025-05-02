@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 
-import Button from 'src@/popup/components/Button';
+import Button, {ButtonTypes} from 'src@/popup/components/Button';
 
 import './index.scss';
 
@@ -29,8 +29,16 @@ export default function ConfirmModal({title, onCancel, onApprove}: Props) {
         <div>
             <div>{title}</div>
             <div>
-                <Button text="Confirm [Y]" className="confirmModalRightMargin" callback={onApprove} />
-                <Button text="Cancel [N]" callback={onCancel} />
+                <Button
+                    text="Confirm [Y]"
+                    className="confirmModalRightMargin"
+                    callback={onApprove}
+                    type={ButtonTypes.DANGER}
+                />
+                <Button
+                    text="Cancel [N]"
+                    callback={onCancel}
+                />
             </div>
         </div>
     );

@@ -7,6 +7,8 @@ import Button from 'src@/popup/components/Button';
 import SaveModal from './SaveModal';
 import ConfirmModal from './ConfirmModal';
 import DefaultModal from './DefaultModal';
+import ExportModal from './ExportModal';
+import ImportModal from './ImportModal';
 
 import './index.scss';
 
@@ -15,6 +17,8 @@ enum POPUP_MODES {
     URL_GROUP_EDIT = 'URL_GROUP_EDIT',
     CREATE_NEW = 'CREATE_NEW',
     CONFIRM_REMOVE = 'CONFIRM_REMOVE',
+    EXPORT = 'EXPORT',
+    IMPORT = 'IMPORT'
 }
 
 function isThisMode(currentMode: POPUP_MODES, mode: POPUP_MODES) {
@@ -65,32 +69,29 @@ export default function Popup() {
         setMode(POPUP_MODES.DEFAULT);
     }
 
+    const onGoToMainPage = () => {
+        setMode(POPUP_MODES.DEFAULT);
+        reloadState();
+    }
+
     return (
         <div className="popup">
             {isThisMode(mode, POPUP_MODES.DEFAULT) && (
-                <>
-                    <div className="actions">
-                        <Button text="New" callback={() => setMode(POPUP_MODES.CREATE_NEW)} />
-                    </div>
-                    <DefaultModal
-                        onRemoveClick={onRemoveClick}
-                        urlGroups={state.groups}
-                        onEditClick={onEditGroupById}
-                    />
-                </>
+                <DefaultModal
+                    onRemoveClick={onRemoveClick}
+                    onEditClick={onEditGroupById}
+                    onCreateNewClick={() => setMode(POPUP_MODES.CREATE_NEW)}
+                    onExportClick={() => setMode(POPUP_MODES.EXPORT)}
+                    onImportClick={() => setMode(POPUP_MODES.IMPORT)}
+                    urlGroups={state.groups}
+                />
             )}
             {isThisMode(mode, POPUP_MODES.CREATE_NEW) && (
-                <SaveModal onClose={() => {
-                    setMode(POPUP_MODES.DEFAULT);
-                    reloadState();
-                }} />
+                <SaveModal onClose={onGoToMainPage} />
             )}
             {isThisMode(mode, POPUP_MODES.URL_GROUP_EDIT) && (
                 <SaveModal
-                    onClose={() => {
-                        setMode(POPUP_MODES.DEFAULT);
-                        reloadState();
-                    }}
+                    onClose={onGoToMainPage}
                     selectedGroup={selectedGroup}
                 />
             )}
@@ -98,8 +99,14 @@ export default function Popup() {
                 <ConfirmModal
                     title="Remove?"
                     onApprove={onRemoveApprove}
-                    onCancel={() => setMode(POPUP_MODES.DEFAULT)}
+                    onCancel={onGoToMainPage}
                 />
+            )}
+            {isThisMode(mode, POPUP_MODES.EXPORT) && (
+                <ExportModal onClose={onGoToMainPage} />
+            )}
+            {isThisMode(mode, POPUP_MODES.IMPORT) && (
+                <ImportModal onClose={onGoToMainPage} />
             )}
         </div>
     );
