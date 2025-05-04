@@ -6,9 +6,10 @@ import TextArea from 'src@/popup/components/TextArea';
 import {useSwitch} from 'src@/popup/components/Switch/useSwitch';
 import {ExportData, EXPORT_DATA_VERSIONS} from 'src@/popup/components/Popup/ExportModal/types';
 import {SCHEMAS_BY_VERSION_MAP} from 'src@/popup/components/Popup/ExportModal/schemas';
+import {generateRandomString} from 'src@/utils/randomizer';
 
 import Alert, {AlertTypes, Props as AlertProps} from 'src@/popup/components/Alert';
-import {saveDataWithOptions} from 'src@/utils/localStorage';
+import {LSData, saveDataWithOptions} from 'src@/utils/localStorage';
 
 import './index.scss';
 
@@ -54,8 +55,15 @@ export default function ImportModal({onClose}: Props) {
     const onImportClick = () => {
         try {
             const parsedValue = parseExportedData(state);
+            const dataWithIds: LSData = {
+                ...parsedValue.data,
+                groups: parsedValue.data.groups.map(group => ({
+                    ...group,
+                    id: generateRandomString(16),
+                })),
+            }
 
-            saveDataWithOptions(parsedValue.data, isReplaceData)
+            saveDataWithOptions(dataWithIds, isReplaceData)
                 .then(() => {
                     setMessage({
                         type: AlertTypes.SUCCESS,

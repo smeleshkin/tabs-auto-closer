@@ -1,7 +1,6 @@
 const GROUP_SCHEMA = {
     "type": "object",
     "required": [
-        'id',
         'name',
         'closeTimeout',
         'matches',   

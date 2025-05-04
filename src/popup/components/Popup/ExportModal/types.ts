@@ -1,4 +1,4 @@
-import {LSData} from 'src@/utils/localStorage';
+import {NewUrlGroup} from 'src@/types/urlGroup';
 
 export enum EXPORT_DATA_VERSIONS {
     ALL_VERSION_1 = 'TabsAutoCloserExportV1',
@@ -6,5 +6,7 @@ export enum EXPORT_DATA_VERSIONS {
 
 export type ExportData = {
     version: EXPORT_DATA_VERSIONS,
-    data: LSData,
+    data: {
+        groups: NewUrlGroup[],
+    },
 };

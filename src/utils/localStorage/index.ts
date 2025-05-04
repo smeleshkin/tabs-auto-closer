@@ -7,6 +7,7 @@ export const LS_KEY = 'tab-closer';
 export type LSData = {
     groups: UrlGroup[],
 }
+
 export const LS_EMPTY_DATA: LSData = {
     groups: [],
 };
