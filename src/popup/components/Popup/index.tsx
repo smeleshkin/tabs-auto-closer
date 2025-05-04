@@ -1,8 +1,15 @@
 import React, {useEffect, useState} from 'react';
 
-import {LS_EMPTY_DATA, LSData, getData, removeUrlGroupById} from 'src@/utils/localStorage';
+import {
+    LS_EMPTY_DATA,
+    LSData,
+    getData,
+    removeUrlGroupById,
+    LS_EMPTY_STATISTIC,
+    getStatistic,
+    Statistic,
+} from 'src@/utils/localStorage';
 import {UrlGroup} from 'src@/types/urlGroup';
-import Button from 'src@/popup/components/Button';
 
 import SaveModal from './SaveModal';
 import ConfirmModal from './ConfirmModal';
@@ -33,6 +40,8 @@ export default function Popup() {
     const [state, setState] = useState<LSData>(LS_EMPTY_DATA);
     const [selectedGroup, setSelectedGroup] = useState<UrlGroup | undefined>();
 
+    const [statistic, setStatistic] = useState<Statistic>(LS_EMPTY_STATISTIC);
+
     const onEditGroupById = (id: UrlGroup['id']) => {
         const group = state.groups.find(group => group.id === id);
         if (group) {
@@ -48,6 +57,12 @@ export default function Popup() {
                     setState(result);
                 }
             });
+        getStatistic()
+            .then(result => {
+                if (result) {
+                    setStatistic(result);
+                }
+            })
     };
 
     useEffect(() => {
@@ -84,6 +99,7 @@ export default function Popup() {
                     onExportClick={() => setMode(POPUP_MODES.EXPORT)}
                     onImportClick={() => setMode(POPUP_MODES.IMPORT)}
                     urlGroups={state.groups}
+                    statistic={statistic}
                 />
             )}
             {isThisMode(mode, POPUP_MODES.CREATE_NEW) && (

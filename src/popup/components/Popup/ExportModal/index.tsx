@@ -13,7 +13,10 @@ interface Props {
 
 const createExportData = (localStorageData: LSData): ExportData => ({
     version: EXPORT_DATA_VERSIONS.ALL_VERSION_1,
-    data: localStorageData,
+    data: {
+        ...localStorageData,
+        groups: localStorageData.groups.map(({id, ...rest})=> ({...rest})),
+    },
 });
 
 export default function ExportModal({onClose}: Props) {

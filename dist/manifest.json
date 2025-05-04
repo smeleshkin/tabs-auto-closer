@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Tabs auto close",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "content_scripts": [
     {
       "matches": [
