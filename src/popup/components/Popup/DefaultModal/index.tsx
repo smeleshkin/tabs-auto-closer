@@ -3,11 +3,14 @@ import React from 'react';
 import {UrlGroup} from 'src@/types/urlGroup';
 import MenuItem from 'src@/popup/components/Popup/MenuItem';
 import Button, {ButtonTypes} from 'src@/popup/components/Button';
+import {Statistic} from 'src@/utils/localStorage';
+import Alert, {AlertTypes} from 'src@/popup/components/Alert';
 
 import './index.scss';
 
 interface Props {
     urlGroups: UrlGroup[],
+    statistic: Statistic,
     onRemoveClick: (id: string) => void,
     onEditClick: (id: string) => void,
     onCreateNewClick: () => void,
@@ -16,8 +19,9 @@ interface Props {
 }
 
 export default function DefaultModal({
-    onRemoveClick,
     urlGroups,
+    statistic,
+    onRemoveClick,
     onEditClick,
     onCreateNewClick,
     onExportClick,
@@ -25,23 +29,26 @@ export default function DefaultModal({
 }: Props) {
     return (
         <div className="pasteModal">
-            <div className="defaultModalActions">
+            <div className="defaultModalActions mb-2">
                 <Button text="New" callback={onCreateNewClick} type={ButtonTypes.SUCCESS} />
                 <div className="defaultModalActionsBlock">
                     <Button text="Import" callback={onImportClick} />
                     {Boolean(urlGroups.length) && (<Button text="Export" callback={onExportClick} />)}
                 </div>
             </div>
-            {urlGroups.map((item, idx) => (
-                <MenuItem
-                    id={item.id}
-                    title={item.name}
-                    key={item.id}
-                    shortcut={idx}
-                    onRemoveClick={onRemoveClick}
-                    onSelect={onEditClick}
-                />)
-            )}
+            <Alert type={AlertTypes.SUCCESS} text={`Tabs closed: ${statistic.allClosed}`}/>
+            <ul className="list-group">
+                {urlGroups.map((item, idx) => (
+                    <MenuItem
+                        id={item.id}
+                        title={item.name}
+                        key={item.id}
+                        shortcut={idx}
+                        onRemoveClick={onRemoveClick}
+                        onSelect={onEditClick}
+                    />)
+                )}
+            </ul>
         </div>
     );
 }

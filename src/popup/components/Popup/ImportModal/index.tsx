@@ -1,9 +1,12 @@
 import React, {useState} from 'react';
+import validator  from 'jsonschema';
 
 import Button, {ButtonTypes} from 'src@/popup/components/Button';
 import TextArea from 'src@/popup/components/TextArea';
 import {useSwitch} from 'src@/popup/components/Switch/useSwitch';
 import {ExportData, EXPORT_DATA_VERSIONS} from 'src@/popup/components/Popup/ExportModal/types';
+import {SCHEMAS_BY_VERSION_MAP} from 'src@/popup/components/Popup/ExportModal/schemas';
+
 import Alert, {AlertTypes, Props as AlertProps} from 'src@/popup/components/Alert';
 import {saveDataWithOptions} from 'src@/utils/localStorage';
 
@@ -15,12 +18,23 @@ interface Props {
 
 class UnknownExportDataVersion extends Error {}
 
+const custVersion = (parsedJSON: any) => {
+    const version = parsedJSON?.version;
+    if (version === EXPORT_DATA_VERSIONS.ALL_VERSION_1) {
+        return parsedJSON as {version: EXPORT_DATA_VERSIONS.ALL_VERSION_1};
+    }
+
+    throw new UnknownExportDataVersion(`Unknown export data version: ${version}`);
+}
+
 const parseExportedData = (value: string): ExportData => {
     const parsedJSON = JSON.parse(value.trim());
-    const version = parsedJSON?.version;
-    if (version !== EXPORT_DATA_VERSIONS.ALL_VERSION_1) {
-        throw new UnknownExportDataVersion(`Unknown export data version: ${version}`);
-    }
+    const parsedDataWithCustedVersion = custVersion(parsedJSON);
+
+    validator.validate(parsedJSON, SCHEMAS_BY_VERSION_MAP[parsedDataWithCustedVersion.version], {
+        required: true,
+        throwError: true,
+    });
     
     return parsedJSON as ExportData;
 }

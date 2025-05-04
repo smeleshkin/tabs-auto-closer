@@ -28,12 +28,14 @@ export default function MenuItem({title, shortcut, onRemoveClick, onSelect, id}:
 
 
     return (
-        <div className="menuItem">
-            <div>[{shortcut}] {title}</div>
-            <div>
-                <Button text="[E]" title="Edit" className="menuItemButton" callback={() => onSelect(id)} type={ButtonTypes.PRIMARY} />
-                <Button text="[X]" title="Remove" callback={() => onRemoveClick(id)} type={ButtonTypes.DANGER} />
+        <li className="list-group-item">
+            <div className="menuItem">
+                <div>[{shortcut}] {title}</div>
+                <div>
+                    <Button text="[E]" title="Edit" className="menuItemButton" callback={() => onSelect(id)} type={ButtonTypes.PRIMARY} />
+                    <Button text="[X]" title="Remove" callback={() => onRemoveClick(id)} type={ButtonTypes.DANGER} />
+                </div>
             </div>
-        </div>
+        </li>
     );
 }

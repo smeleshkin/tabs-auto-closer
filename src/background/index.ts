@@ -1,7 +1,7 @@
 /// <reference types="chrome"/>
 
 import {MESSAGE_EVENTS, MessageTypes} from 'src@/messageEvents';
-import {getData} from 'src@/utils/localStorage';
+import {getData, updateStatistic} from 'src@/utils/localStorage';
 import {UrlGroup} from 'src@/types/urlGroup';
 
 const findMatchedGroup = (urlGroups: UrlGroup[], url: string) => {
@@ -46,7 +46,8 @@ chrome.runtime.onMessage.addListener(
 
                 const timeoutId = setTimeout(async () =>  {
                     try {
-                        await chrome.tabs.remove(tabId)
+                        await chrome.tabs.remove(tabId);
+                        await updateStatistic();
                     } catch (e) {
                         console.warn(`Error in remove tab with id "${tabId}": ${String(e)}`);
                     }
