@@ -1,0 +1,50 @@
+.gallery {
+    display: flex;
+    gap: 10px;
+}
+
+@media screen and (width < 900px) {
+    .gallery {
+       flex-direction: column;
+    }
+}
+
+.gallery-image {
+    width: 100%;
+    border-radius: 10px;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.config {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.config-wrapper {
+    position: relative;
+}
+
+.copy-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+h1 {
+    margin-top: 25px;
+}
+
+h3 {
+    margin-top: 15px;
+}
+
+.buttons-container {
+    display: flex;
+    gap: 10px;
+}
