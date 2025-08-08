@@ -1,5 +1,6 @@
 export type NewUrlGroup = {
     matches: string[],
+    exclude?: string[],
     name: string,
     closeTimeout: number,
 }
