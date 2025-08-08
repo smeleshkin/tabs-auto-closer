@@ -23,6 +23,7 @@ const TEXTAREA_PLACEHOLDER = [
 export default function SaveModal({onClose, selectedGroup}: Props) {
     const [newItemTitle, setNewItemTitle] = useState<string>(selectedGroup? selectedGroup.name : '');
     const [newItemText, setNewItemText] = useState<string>(selectedGroup ? selectedGroup.matches.join(`\n`) : '');
+    const [excludeText, setExcludeText] = useState<string>(selectedGroup?.exclude ? selectedGroup?.exclude.join(`\n`) : '');
     const [newItemTimeout, setNewItemTimeout] = useState<string>(selectedGroup ? String(selectedGroup.closeTimeout) : '');
     const [newItemId] = useState<string>(selectedGroup ? selectedGroup.id : generateRandomString(16));
     const titleInputRef = useRef<HTMLInputElement>() as React.MutableRefObject<HTMLInputElement>;
@@ -42,7 +43,9 @@ export default function SaveModal({onClose, selectedGroup}: Props) {
     const onInputTextHandler: React.ChangeEventHandler<HTMLTextAreaElement> = e => {
         setNewItemText(e.target.value);
     }
-
+    const onExcludeInputHandler: React.ChangeEventHandler<HTMLTextAreaElement> = e => {
+        setExcludeText(e.target.value);
+    }
     const onInputTimeoutHandler: React.ChangeEventHandler<HTMLInputElement> = e => {
         setNewItemTimeout(e.target.value);
     }
@@ -71,6 +74,7 @@ export default function SaveModal({onClose, selectedGroup}: Props) {
                 />
             </div>
             <TextArea value={newItemText} onChange={onInputTextHandler} placeholder={TEXTAREA_PLACEHOLDER} />
+            <TextArea value={excludeText} onChange={onInputTextHandler} placeholder={TEXTAREA_PLACEHOLDER} />
             <div className="saveModalActionsBlock">
                 <Button text="Save" callback={onSave} type={ButtonTypes.PRIMARY} />
                 <Button text="Close" callback={onClose} />
