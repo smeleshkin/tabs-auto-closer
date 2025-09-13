@@ -1,22 +1,14 @@
 {
   "manifest_version": 3,
   "name": "Tabs auto close",
-  "version": "1.0.3",
-  "content_scripts": [
-    {
-      "matches": [
-        "<all_urls>"
-      ],
-      "js": ["js/content.js"]
-    }
-  ],
+  "version": "2.0.0",
   "background": {
     "service_worker": "js/background.js"
   },
   "action": {
     "default_popup": "popup.html"
   },
-  "permissions": ["storage"],
+  "permissions": ["storage", "tabs"],
   "icons": {
     "16": "icons/broom16.png",
     "48": "icons/broom48.png",
