@@ -36,7 +36,9 @@ export default function DefaultModal({
                     {Boolean(urlGroups.length) && (<Button text="Export" callback={onExportClick} />)}
                 </div>
             </div>
-            <Alert type={AlertTypes.SUCCESS} text={`Tabs closed: ${statistic.allClosed}`}/>
+            <Alert type={AlertTypes.SUCCESS}>
+                {`Tabs closed: ${statistic.allClosed}`}
+            </Alert>
             <ul className="list-group">
                 {urlGroups.map((item, idx) => (
                     <MenuItem

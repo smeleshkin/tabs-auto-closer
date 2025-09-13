@@ -7,7 +7,7 @@ export enum AlertTypes {
 }
 
 export type Props = {
-    text: string;
+    children: string | JSX.Element;
     type: AlertTypes,
 };
 
@@ -16,13 +16,13 @@ const ALERT_TYPE_TO_CLASS_MAP: Record<AlertTypes, string> = {
     [AlertTypes.ERROR]: 'alert-danger',
 };
 
-const Alert = ({type, text}: Props) => {
+const Alert = ({type, children}: Props) => {
     return (
         <div
             className={cn('alert', ALERT_TYPE_TO_CLASS_MAP[type])}
             role="alert"
         >
-            {text}
+            {children}
         </div>
     );
 }

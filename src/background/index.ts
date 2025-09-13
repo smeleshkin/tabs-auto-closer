@@ -2,13 +2,7 @@
 
 import {MESSAGE_EVENTS, MessageTypes} from 'src@/messageEvents';
 import {getData, updateStatistic} from 'src@/utils/localStorage';
-import {UrlGroup} from 'src@/types/urlGroup';
-
-const findMatchedGroup = (urlGroups: UrlGroup[], url: string) => {
-    return urlGroups.find(group => {
-        return group.matches.some(regexpAsString => new RegExp(regexpAsString).test(url));
-    });
-};
+import {findMatchedGroup} from 'src@/utils/findMatchedGroup';
 
 const ICONS = {
     DEFAULT: '/icons/broom128.png',
