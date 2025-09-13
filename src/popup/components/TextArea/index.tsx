@@ -10,13 +10,15 @@ interface Props {
 
 export default function TextArea({value, onChange, placeholder, disabled, rowsCount}: Props) {
     return (
-        <textarea
-            onChange={onChange}
-            value={value}
-            placeholder={placeholder}
-            disabled={disabled}
-            className="w-100"
-            rows={rowsCount}
-        />
+        <div className="input-group mb-2">
+            <textarea
+                onChange={onChange}
+                value={value}
+                placeholder={placeholder}
+                disabled={disabled}
+                className="form-control"
+                rows={rowsCount}
+            />
+        </div>
     )
 }

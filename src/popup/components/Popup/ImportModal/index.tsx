@@ -42,7 +42,7 @@ const parseExportedData = (value: string): ExportData => {
 
 export default function ImportModal({onClose}: Props) {
     const [state, setState] = useState<string>('');
-    const [message, setMessage] = useState<AlertProps | null>(null);
+    const [message, setMessage] = useState<{type: AlertTypes, text: string} | null>(null);
     const onChangeHandler: React.ChangeEventHandler<HTMLTextAreaElement> = e => {
         setMessage(null);
         setState(e.target.value);
@@ -93,7 +93,7 @@ export default function ImportModal({onClose}: Props) {
                 <TextArea onChange={onChangeHandler} value={state} rowsCount={10} />
             </div>
             {switchComponent}
-            {message !== null && <Alert {...message} />}
+            {message !== null && <Alert type={message.type}>{message.text}</Alert>}
             <div className="importModalActionsBlock">
                 <Button text="Import" callback={onImportClick} type={ButtonTypes.PRIMARY} />
                 <Button text="Close" callback={onClose} />
