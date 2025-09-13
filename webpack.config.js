@@ -12,7 +12,6 @@ module.exports = () => {
     return {
         entry: {
             [POPUP_CHUNK]: './src/popup/index.tsx',
-            [CONTENT_CHUNK]: './src/content/index.ts',
             [BACKGROUND_CHUNK]: './src/background/index.ts'
         },
         output: {
