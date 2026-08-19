@@ -1,4 +1,11 @@
 .popup {
   padding: 10px;
   min-width: 400px;
+
+  &__version {
+    margin-top: 10px;
+    color: #6c757d;
+    font-size: 14px;
+    text-align: center;
+  }
 }
