@@ -1,14 +1,12 @@
 /// <reference types="chrome"/>
 
 import {getData, updateStatistic} from 'src@/utils/localStorage';
-import {findMatchedGroup} from 'src@/utils/findMatchedGroup';
+import {createTabUpdatedHandler} from './tabUpdatedHandler';
 
 const ICONS = {
     DEFAULT: '/icons/broom128.png',
     ACTION: '/icons/broom128timer.png',
 };
-
-const timeouts: Record<string, NodeJS.Timeout> = {};
 
 const setIcon = (tabId: number, iconPath: string) => {
     const params = {
@@ -23,30 +21,14 @@ const setIcon = (tabId: number, iconPath: string) => {
     }
 };
 
-chrome.tabs.onUpdated.addListener(async (tabId, changes, tab) => {
-    if (tab.status === 'complete' && tab.url) {
-        const {groups} = await getData();
-        const matchedGroup = findMatchedGroup(groups, tab.url);
-
-        if (matchedGroup) {
-            setIcon(tabId, ICONS.ACTION);
-
-            const timeoutId = setTimeout(async () =>  {
-                try {
-                    await chrome.tabs.remove(tabId);
-                    await updateStatistic();
-                } catch (e) {
-                    console.warn(`Error in remove tab with id "${tabId}": ${String(e)}`);
-                }
-            }, matchedGroup.closeTimeout);
-            timeouts[String(tabId)] = timeoutId;
-        } else {
-            const timeoutId = timeouts[String(tabId)];
-            if (timeoutId) {
-                clearTimeout(timeoutId);
-                delete timeouts[String(tabId)];
-                setIcon(tabId, ICONS.DEFAULT);
-            }
-        }
-    }
-});
+chrome.tabs.onUpdated.addListener(createTabUpdatedHandler({
+    getData,
+    removeTab: tabId => chrome.tabs.remove(tabId),
+    updateStatistic,
+    setIcon,
+    setTimer: (callback, timeout) => setTimeout(callback, timeout),
+    clearTimer: timeout => clearTimeout(timeout),
+    defaultIcon: ICONS.DEFAULT,
+    actionIcon: ICONS.ACTION,
+    warn: message => console.warn(message),
+}));
