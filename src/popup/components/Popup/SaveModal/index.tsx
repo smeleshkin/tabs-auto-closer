@@ -6,9 +6,9 @@ import Button, {ButtonTypes} from 'src@/popup/components/Button';
 import { saveUrlGroup } from 'src@/utils/localStorage';
 import { generateRandomString } from 'src@/utils/randomizer';
 import {UrlGroup} from 'src@/types/urlGroup';
-import {findMatchedGroup} from 'src@/utils/findMatchedGroup';
 import Alert, {AlertTypes} from 'src@/popup/components/Alert';
 
+import {createUrlGroupFromForm, doesUrlGroupMatch} from './urlGroupForm';
 import './index.scss';
 
 interface Props {
@@ -29,11 +29,11 @@ export default function SaveModal({onClose, selectedGroup}: Props) {
     const [newItemId] = useState<string>(selectedGroup ? selectedGroup.id : generateRandomString(16));
     const titleInputRef = useRef<HTMLInputElement>() as React.MutableRefObject<HTMLInputElement>;
 
-    const getChangedGroup = () => ({
+    const getChangedGroup = () => createUrlGroupFromForm({
         id: newItemId,
-        name: newItemTitle,
-        matches: newItemText.split(`\n`),
-        closeTimeout: Number(newItemTimeout),
+        title: newItemTitle,
+        matches: newItemText,
+        timeout: newItemTimeout,
     });
     const onSave = () => {
         saveUrlGroup(getChangedGroup())
@@ -56,7 +56,7 @@ export default function SaveModal({onClose, selectedGroup}: Props) {
         urlForCheck: '',
     });
     const checkUrl = () => {
-        const isMatch = Boolean(findMatchedGroup([getChangedGroup()], urlForCheck));
+        const isMatch = doesUrlGroupMatch(getChangedGroup(), urlForCheck);
         setChecker({
             isMatch,
             urlForCheck,
