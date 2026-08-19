@@ -36,6 +36,7 @@ function isConfirmRemoveMode(mode: POPUP_MODES) {
 }
 
 export default function Popup() {
+    const extensionVersion = chrome.runtime.getManifest().version;
     const [mode, setMode] = useState<POPUP_MODES>(POPUP_MODES.DEFAULT);
     const [state, setState] = useState<LSData>(LS_EMPTY_DATA);
     const [selectedGroup, setSelectedGroup] = useState<UrlGroup | undefined>();
@@ -124,6 +125,9 @@ export default function Popup() {
             {isThisMode(mode, POPUP_MODES.IMPORT) && (
                 <ImportModal onClose={onGoToMainPage} />
             )}
+            <footer className="popup__version">
+                v{extensionVersion}
+            </footer>
         </div>
     );
 }
