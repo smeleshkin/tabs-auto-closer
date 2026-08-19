@@ -1,0 +1,154 @@
+name: Publish to Chrome Web Store
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: chrome-web-store-production
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Build and publish extension
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out release
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Verify release version
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          tag_version="${GITHUB_REF_NAME#v}"
+          manifest_version="$(node -p "require('./src/manifest.json').version")"
+
+          if [[ "$tag_version" != "$manifest_version" ]]; then
+            echo "Release tag version ($tag_version) does not match manifest version ($manifest_version)."
+            exit 1
+          fi
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build extension
+        run: npm run build
+
+      - name: Create Chrome Web Store package
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd dist
+          zip -qr ../tabs-auto-closer.zip .
+
+      - name: Authenticate to Google Cloud
+        id: google-auth
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+          token_format: access_token
+          access_token_scopes: https://www.googleapis.com/auth/chromewebstore
+
+      - name: Upload extension package
+        id: upload
+        shell: bash
+        env:
+          ACCESS_TOKEN: ${{ steps.google-auth.outputs.access_token }}
+          CWS_PUBLISHER_ID: ${{ vars.CWS_PUBLISHER_ID }}
+          CWS_EXTENSION_ID: ${{ vars.CWS_EXTENSION_ID }}
+        run: |
+          set -euo pipefail
+
+          item="publishers/${CWS_PUBLISHER_ID}/items/${CWS_EXTENSION_ID}"
+          upload_url="https://chromewebstore.googleapis.com/upload/v2/${item}:upload"
+          status_url="https://chromewebstore.googleapis.com/v2/${item}:fetchStatus"
+
+          upload_response="$(curl \
+            --fail-with-body \
+            --silent \
+            --show-error \
+            --request POST \
+            --header "Authorization: Bearer ${ACCESS_TOKEN}" \
+            --header "Content-Type: application/zip" \
+            --upload-file tabs-auto-closer.zip \
+            "$upload_url")"
+
+          echo "$upload_response" | jq .
+          upload_state="$(echo "$upload_response" | jq -r '.uploadState // empty')"
+
+          case "$upload_state" in
+            SUCCEEDED|UPLOAD_SUCCEEDED)
+              ;;
+            IN_PROGRESS|UPLOAD_IN_PROGRESS)
+              for attempt in {1..30}; do
+                sleep 10
+
+                status_response="$(curl \
+                  --fail-with-body \
+                  --silent \
+                  --show-error \
+                  --header "Authorization: Bearer ${ACCESS_TOKEN}" \
+                  "$status_url")"
+
+                upload_state="$(echo "$status_response" | jq -r '.lastAsyncUploadState // empty')"
+                echo "Upload processing state: ${upload_state:-unknown} (attempt $attempt/30)"
+
+                case "$upload_state" in
+                  SUCCEEDED|UPLOAD_SUCCEEDED)
+                    break
+                    ;;
+                  FAILED|UPLOAD_FAILED|NOT_FOUND)
+                    echo "$status_response" | jq .
+                    exit 1
+                    ;;
+                esac
+              done
+
+              if [[ "$upload_state" != "SUCCEEDED" && "$upload_state" != "UPLOAD_SUCCEEDED" ]]; then
+                echo "Timed out waiting for Chrome Web Store to process the upload."
+                exit 1
+              fi
+              ;;
+            *)
+              echo "Unexpected upload state: ${upload_state:-missing}"
+              exit 1
+              ;;
+          esac
+
+      - name: Submit extension for publication
+        shell: bash
+        env:
+          ACCESS_TOKEN: ${{ steps.google-auth.outputs.access_token }}
+          CWS_PUBLISHER_ID: ${{ vars.CWS_PUBLISHER_ID }}
+          CWS_EXTENSION_ID: ${{ vars.CWS_EXTENSION_ID }}
+        run: |
+          set -euo pipefail
+
+          publish_url="https://chromewebstore.googleapis.com/v2/publishers/${CWS_PUBLISHER_ID}/items/${CWS_EXTENSION_ID}:publish"
+
+          publish_response="$(curl \
+            --fail-with-body \
+            --silent \
+            --show-error \
+            --request POST \
+            --header "Authorization: Bearer ${ACCESS_TOKEN}" \
+            --header "Content-Type: application/json" \
+            --data '{"publishType":"DEFAULT_PUBLISH","blockOnWarnings":true}' \
+            "$publish_url")"
+
+          echo "$publish_response" | jq .
