@@ -81,6 +81,20 @@ describe('tab updated handler', () => {
         expect(dependencies.setIcon).not.toHaveBeenCalled();
     });
 
+    test('does not schedule a timer for an excluded URL', async () => {
+        const dependencies = createDependencies([{
+            ...matchingGroup,
+            excludeMatches: ['joinchat'],
+        }]);
+        const setTimer = vi.spyOn(dependencies, 'setTimer');
+        const handler = createTabUpdatedHandler(dependencies);
+
+        await handler(1, {}, {status: 'complete', url: 'https://t.me/joinchat/example'});
+
+        expect(setTimer).not.toHaveBeenCalled();
+        expect(dependencies.setIcon).not.toHaveBeenCalled();
+    });
+
     test('cancels a pending close after navigation to a non-matching URL', async () => {
         const dependencies = createDependencies();
         const clearTimer = vi.spyOn(dependencies, 'clearTimer');
