@@ -40,6 +40,7 @@ export default function Popup() {
     const [mode, setMode] = useState<POPUP_MODES>(POPUP_MODES.DEFAULT);
     const [state, setState] = useState<LSData>(LS_EMPTY_DATA);
     const [selectedGroup, setSelectedGroup] = useState<UrlGroup | undefined>();
+    const [isInTab, setIsInTab] = useState(true);
 
     const [statistic, setStatistic] = useState<Statistic>(LS_EMPTY_STATISTIC);
 
@@ -67,7 +68,10 @@ export default function Popup() {
     };
 
     useEffect(() => {
-        reloadState()
+        reloadState();
+        chrome.tabs.getCurrent(tab => {
+            setIsInTab(Boolean(tab));
+        });
     }, []);
 
     const [idForRemove, setIdForRemove] = useState<UrlGroup['id'] | null>(null);
@@ -90,6 +94,12 @@ export default function Popup() {
         reloadState();
     }
 
+    const onOpenInNewTabClick = () => {
+        chrome.tabs.create({
+            url: chrome.runtime.getURL('popup.html'),
+        });
+    }
+
     return (
         <div className="popup">
             {isThisMode(mode, POPUP_MODES.DEFAULT) && (
@@ -99,6 +109,8 @@ export default function Popup() {
                     onCreateNewClick={() => setMode(POPUP_MODES.CREATE_NEW)}
                     onExportClick={() => setMode(POPUP_MODES.EXPORT)}
                     onImportClick={() => setMode(POPUP_MODES.IMPORT)}
+                    onOpenInNewTabClick={onOpenInNewTabClick}
+                    isInTab={isInTab}
                     urlGroups={state.groups}
                     statistic={statistic}
                 />

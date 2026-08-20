@@ -16,6 +16,8 @@ interface Props {
     onCreateNewClick: () => void,
     onExportClick: () => void,
     onImportClick: () => void,
+    onOpenInNewTabClick: () => void,
+    isInTab: boolean,
 }
 
 export default function DefaultModal({
@@ -26,9 +28,18 @@ export default function DefaultModal({
     onCreateNewClick,
     onExportClick,
     onImportClick,
+    onOpenInNewTabClick,
+    isInTab,
 }: Props) {
     return (
         <div className="pasteModal">
+            {!isInTab && (<div className="mb-2">
+                <Button
+                    text="Open in new Tab"
+                    callback={onOpenInNewTabClick}
+                    className="w-100"
+                />
+            </div>)}
             <div className="defaultModalActions mb-2">
                 <Button text="New" callback={onCreateNewClick} type={ButtonTypes.SUCCESS} />
                 <div className="defaultModalActionsBlock">
