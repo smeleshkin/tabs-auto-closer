@@ -38,6 +38,23 @@ describe('findMatchedGroup', () => {
         expect(findMatchedGroup(groups, 'https://example.com')).toBeUndefined();
     });
 
+    test('does not return a group when an exclude expression matches', () => {
+        const groupWithExclude = {...groups[0], excludeMatches: ['joinchat']};
+
+        expect(findMatchedGroup([groupWithExclude], 'https://t.me/joinchat/example')).toBeUndefined();
+        expect(findMatchedGroup([groupWithExclude], 'https://t.me/example')).toBe(groupWithExclude);
+    });
+
+    test('continues looking for another group after an excluded match', () => {
+        const excludedGroup = {...groups[0], excludeMatches: ['joinchat']};
+        const fallbackGroup = {...groups[0], id: 'fallback'};
+
+        expect(findMatchedGroup(
+            [excludedGroup, fallbackGroup],
+            'https://t.me/joinchat/example',
+        )).toBe(fallbackGroup);
+    });
+
     test('returns undefined for an empty group list', () => {
         expect(findMatchedGroup([], 'https://t.me/example')).toBeUndefined();
     });
@@ -47,5 +64,11 @@ describe('findMatchedGroup', () => {
 
         expect(() => findMatchedGroup([invalidGroup], 'https://t.me/example')).not.toThrow();
         expect(findMatchedGroup([invalidGroup], 'https://t.me/example')).toBeUndefined();
+    });
+
+    test('ignores an invalid exclude regular expression', () => {
+        const invalidExcludeGroup = {...groups[0], excludeMatches: ['[']};
+
+        expect(findMatchedGroup([invalidExcludeGroup], 'https://t.me/example')).toBe(invalidExcludeGroup);
     });
 });

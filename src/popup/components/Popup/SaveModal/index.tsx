@@ -22,9 +22,17 @@ const TEXTAREA_PLACEHOLDER = [
     'https:\\/\\/t\\.me\\/joinchat\\/(.)*'
 ].join(`\n`);
 
+const EXCLUDE_TEXTAREA_PLACEHOLDER = [
+    'Exclude regular expressions on new lines. Example:',
+    'https:\\/\\/t\\.me\\/joinchat\\/keep-this-tab'
+].join(`\n`);
+
 export default function SaveModal({onClose, selectedGroup}: Props) {
     const [newItemTitle, setNewItemTitle] = useState<string>(selectedGroup? selectedGroup.name : '');
     const [newItemText, setNewItemText] = useState<string>(selectedGroup ? selectedGroup.matches.join(`\n`) : '');
+    const [newItemExcludeText, setNewItemExcludeText] = useState<string>(
+        selectedGroup ? (selectedGroup.excludeMatches ?? []).join(`\n`) : '',
+    );
     const [newItemTimeout, setNewItemTimeout] = useState<string>(selectedGroup ? String(selectedGroup.closeTimeout) : '');
     const [newItemId] = useState<string>(selectedGroup ? selectedGroup.id : generateRandomString(16));
     const titleInputRef = useRef<HTMLInputElement>() as React.MutableRefObject<HTMLInputElement>;
@@ -33,6 +41,7 @@ export default function SaveModal({onClose, selectedGroup}: Props) {
         id: newItemId,
         title: newItemTitle,
         matches: newItemText,
+        excludeMatches: newItemExcludeText,
         timeout: newItemTimeout,
     });
     const onSave = () => {
@@ -44,6 +53,9 @@ export default function SaveModal({onClose, selectedGroup}: Props) {
     }
     const onInputTextHandler: React.ChangeEventHandler<HTMLTextAreaElement> = e => {
         setNewItemText(e.target.value);
+    }
+    const onInputExcludeTextHandler: React.ChangeEventHandler<HTMLTextAreaElement> = e => {
+        setNewItemExcludeText(e.target.value);
     }
 
     const onInputTimeoutHandler: React.ChangeEventHandler<HTMLInputElement> = e => {
@@ -64,7 +76,7 @@ export default function SaveModal({onClose, selectedGroup}: Props) {
     }
     useEffect(() => {
         checkUrl();
-    }, [urlForCheck, newItemText]);
+    }, [urlForCheck, newItemText, newItemExcludeText]);
 
     useEffect(() => {
         if (titleInputRef.current) {
@@ -86,7 +98,18 @@ export default function SaveModal({onClose, selectedGroup}: Props) {
                 onChange={onInputTimeoutHandler}
                 placeholder="Close timeout in ms"
             />
-            <TextArea value={newItemText} onChange={onInputTextHandler} placeholder={TEXTAREA_PLACEHOLDER} />
+            <TextArea
+                value={newItemText}
+                onChange={onInputTextHandler}
+                placeholder={TEXTAREA_PLACEHOLDER}
+                rowsCount={3}
+            />
+            <TextArea
+                value={newItemExcludeText}
+                onChange={onInputExcludeTextHandler}
+                placeholder={EXCLUDE_TEXTAREA_PLACEHOLDER}
+                rowsCount={3}
+            />
             <div className="saveModalActionsBlock mb-2">
                 <Button text="Save" callback={onSave} type={ButtonTypes.PRIMARY} />
                 <Button text="Close" callback={onClose} />

@@ -21,6 +21,12 @@ const GROUP_SCHEMA = {
                 "type": "string",
             }
         },
+        "excludeMatches": {
+            "type": "array",
+            "items": {
+                "type": "string",
+            }
+        },
     },
 };
 

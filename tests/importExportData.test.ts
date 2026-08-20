@@ -14,6 +14,7 @@ const storedData = {
             id: 'internal-id',
             name: 'Telegram',
             matches: ['https:\\/\\/t\\.me\\/(.)*'],
+            excludeMatches: ['joinchat/important'],
             closeTimeout: 1000,
         },
     ],
@@ -27,6 +28,7 @@ describe('export data', () => {
                 groups: [{
                     name: 'Telegram',
                     matches: ['https:\\/\\/t\\.me\\/(.)*'],
+                    excludeMatches: ['joinchat/important'],
                     closeTimeout: 1000,
                 }],
             },
@@ -45,6 +47,17 @@ describe('import data', () => {
 
     test('parses and validates exported JSON', () => {
         expect(parseExportedData(`  ${JSON.stringify(exportedData)}  `)).toEqual(exportedData);
+    });
+
+    test('keeps exports without exclude expressions backward compatible', () => {
+        const legacyExport = {
+            ...exportedData,
+            data: {
+                groups: exportedData.data.groups.map(({excludeMatches, ...group}) => group),
+            },
+        };
+
+        expect(parseExportedData(JSON.stringify(legacyExport))).toEqual(legacyExport);
     });
 
     test('rejects malformed JSON', () => {
