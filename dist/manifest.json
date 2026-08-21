@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Tabs auto close",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "background": {
     "service_worker": "js/background.js"
   },

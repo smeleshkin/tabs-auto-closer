@@ -9,16 +9,10 @@ const ICONS = {
 };
 
 const setIcon = (tabId: number, iconPath: string) => {
-    const params = {
+    chrome.action.setIcon({
         tabId,
-        path: iconPath
-    };
-    if (chrome.action) {
-        chrome.action.setIcon(params)
-    }
-    if (chrome.pageAction) {
-        chrome.action.setIcon(params)
-    }
+        path: iconPath,
+    });
 };
 
 chrome.tabs.onUpdated.addListener(createTabUpdatedHandler({
